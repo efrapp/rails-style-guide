@@ -195,6 +195,10 @@ programming resources.
   should naturally reside in the model).
 <sup>[[link](#skinny-controllers)]</sup>
 
+* <a name="controller-LOC"></a>
+  Each controller action should (ideally) be under 6 lines of code.
+<sup>[[link](#controller-LOC)]</sup>
+
 * <a name="one-method"></a>
   Each controller action should (ideally) invoke only one method other than an
   initial find or new.
@@ -209,6 +213,10 @@ programming resources.
 * <a name="model-classes"></a>
   Introduce non-ActiveRecord model classes freely.
 <sup>[[link](#model-classes)]</sup>
+
+* <a name="model-LOC"></a>
+  Each model method should (ideally) be under 6 lines of code.
+<sup>[[link](#model-LOC)]</sup>
 
 * <a name="meaningful-model-names"></a>
   Name the models with meaningful (but short) names without abbreviations.
@@ -723,6 +731,27 @@ when you need to retrieve a single record by some attributes.
   Never make complex formatting in the views, export the formatting to a method
   in the view helper or the model.
 <sup>[[link](#no-complex-view-formatting)]</sup>
+
+* <a name="view-helper-no-logic"></a>
+  View helpers should only be used for presentation (not logic).
+<sup>[[link](#view-helper-no-logic)]</sup>
+
+* <a name="view-use-presenter"></a>
+  Views should never contain complex logic. If it's not handled by the model, 
+  it should be handled by a presenter.
+<sup>[[link](#view-use-presenter)]</sup>
+
+* <a name="view-no-variables"></a>
+  There should be no variables assigned in a view.
+<sup>[[link](#view-no-variables)]</sup>
+
+* <a name="view-no-data-structure-manipulation"></a>
+  Don't manipulate data structures in a view (looping is ok).
+<sup>[[link](#view-no-data-structure-manipulation)]</sup>
+
+* <a name="separate-present-data"></a>
+  Keep presentation separate from data.
+<sup>[[link](#separate-present-data)]</sup>
 
 * <a name="partials"></a>
   Mitigate code duplication by using partial templates and layouts.
