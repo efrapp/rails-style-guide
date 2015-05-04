@@ -263,14 +263,16 @@ programming resources.
   end
   ```
 
-* <a name="macro-style-methods"></a>
-  Group macro-style methods (`has_many`, `validates`, etc) in the beginning of
-  the class definition.
-<sup>[[link](#macro-style-methods)]</sup>
+* <a name="model-inclusion-order"></a>
+  Inclusion order in the class definition:
+<sup>[[link](#model-inclusion-order)]</sup>
 
   ```Ruby
   class User < ActiveRecord::Base
-    # keep the default scope first (if any)
+    # modules should be included first, so we know what behavior we are adding to the class
+    include MySpecialModule
+
+    # then the default scope (if any)
     default_scope { where(active: true) }
 
     # constants come up next
@@ -281,10 +283,11 @@ programming resources.
 
     attr_accessible :login, :first_name, :last_name, :email, :password
 
-    # followed by association macros
-    belongs_to :country
-
+    # followed by association macros, in this order
     has_many :authentications, dependent: :destroy
+    has_one :profile
+    # has_and_belongs_to_many would go here if you have one
+    belongs_to :country
 
     # and validation macros
     validates :email, presence: true
