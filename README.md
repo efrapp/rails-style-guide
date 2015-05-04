@@ -31,6 +31,7 @@ programming resources.
 
 ## Table of Contents
 
+* [Testing](#testing)
 * [Configuration](#configuration)
 * [Routing](#routing)
 * [Controllers](#controllers)
@@ -46,6 +47,67 @@ programming resources.
 * [Bundler](#bundler)
 * [Flawed Gems](#flawed-gems)
 * [Managing processes](#managing-processes)
+
+## Testing
+### Unit tests
+* <a name="unit-describe"></a>
+  There should be a `describe` block for each method.
+<sup>[[link](#unit-describe)]</sup>
+
+* <a name="unit-describe"></a>
+  Use a new `describe` block for any validations or scopes that are tested.
+<sup>[[link](#unit-describe)]</sup>
+
+* <a name="use-context"></a>
+  Complex or multiple `it` statements should go in a `context` block (a single, short `it` can stand alone).
+<sup>[[link](#use-context)]</sup>
+
+* <a name="context-when-with-given"></a>
+  Context blocks should almost always begin with one of three words "when", "with" or "given".
+<sup>[[link](#context-when-with-given)]</sup>
+
+* <a name="don't-test-code"></a>
+  For both `context` statements and `it` statements, make sure you can easily identify the purpose of the 
+  spec, and that it describes the behavior desired, and not simply the code being tested.
+<sup>[[link](#don't-test-code)]</sup>
+
+* <a name="exercise-conditionals"></a>
+  When testing a method with a conditional, the test should exercise the conditional
+<sup>[[link](#exercise-conditionals)]</sup>
+
+### Integration tests
+
+* <a name="reuse-scenario"></a>
+  Each `Scenario` has its own setup and teardown, so it's acceptable to test multiple user actions 
+  that follow one another within a scenario.
+<sup>[[link](#reuse-scenario)]</sup>
+
+* <a name="long-scenarios"></a>
+  If a `Scenario` is too long or complicated, then break it up
+<sup>[[link](#long-scenarios)]</sup>
+
+* <a name="cuke-given-when-then"></a>
+  Use `Given`, `When`, and `Then` meaningfully.
+<sup>[[link](#cuke-given-when-then)]</sup>
+
+  `Given` steps are for data setup and setting up the state of the system before the simulated user 
+  starts interacting with it. Once the user has started interacting with the environment, use `When` 
+  instead. For instance, `Given I am on my Dashboard` should be `When I go to my Dashboard` instead.
+
+  `When` steps are for actions taken by the simulated user or, in some cases, an external agent that 
+  changes the state of the system in the middle of the user's interaction, e.g. `When the gradebook 
+  updater makes my gradebook current`.
+
+  `Then` steps are always expectations.  They should almost always have the word "should" in them. 
+  `Then I should see a grade of 55.5% for activity "Bad Acting"`  
+
+* <a name="test-no-instance-vars"></a>
+  Do not use any instance variables except @user (for the current logged in user).
+<sup>[[link](#test-no-instance-vars)]</sup>
+
+* <a name="cukes-use-regex"></a>
+  Use `"([^"]*)"` in the body to allow specifying things like Program titles, Course names, etc.
+<sup>[[link](#cukes-use-regex)]</sup>
 
 ## Configuration
 
