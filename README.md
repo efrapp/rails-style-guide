@@ -51,12 +51,17 @@ programming resources.
 ## Testing
 ### Rspec Unit Tests
 * <a name="unit-describe"></a>
-  There should be a `describe` block for each method.
+  There should be a `describe` block for each method. For class methods, the `describe` statement should 
+  be `.method_name`, and for instance methods `#method_name`.
 <sup>[[link](#unit-describe)]</sup>
 
 * <a name="describe-valid-scopes"></a>
   Use a new `describe` block for any validations or scopes that are tested.
 <sup>[[link](#describe-valid-scopes)]</sup>
+
+* <a name="don't-test-privates"></a>
+  Don't test private methods.
+<sup>[[link](#don't-test-privates)]</sup>
 
 * <a name="use-context"></a>
   Complex or multiple `it` statements should go in a `context` block (a single, short `it` can stand alone).
@@ -66,14 +71,43 @@ programming resources.
   Context blocks should almost always begin with one of three words "when", "with" or "given".
 <sup>[[link](#context-when-with-given)]</sup>
 
+  ````
+  context "when the user is not logged in"
+  context "with an assignment record that is overdue"
+  context "given an overdue assignment"
+  ````
+
 * <a name="don't-test-code"></a>
   For both `context` statements and `it` statements, make sure you can easily identify the purpose of the 
   spec, and that it describes the behavior desired, and not simply the code being tested.
 <sup>[[link](#don't-test-code)]</sup>
 
+  Instead of:
+  ````
+  context "when param next_transfer_date is >= Date.today"
+    it "returns current_section_attempts + old_section.attempts"
+  ````
+  Do something like:
+  ````
+  context "when the user will be transfered today or later"
+    it "returns the combined attempts from their current section and their old section"
+  ````
+
 * <a name="exercise-conditionals"></a>
-  When testing a method with a conditional, the test should exercise the conditional
+  When testing a method with a conditional, the test should exercise the conditional.
 <sup>[[link](#exercise-conditionals)]</sup>
+
+* <a name="switch-to-expect"></a>
+  Use the new rspec `expect` syntax instead of `.should`. See [the rspec guide to switching over](https://github.com/rspec/rspec-expectations/blob/master/Should.md).
+<sup>[[link](#switch-to-expect)]</sup>
+
+* <a name="allow-not-stub"></a>
+  Prefer `allow` to `.stub`.
+<sup>[[link](#allow-not-stub)]</sup>
+
+* <a name="expect-not-should-receive"></a>
+  Prefer `expect` to `.should_receive`.
+<sup>[[link](#expect-not-should-receive)]</sup>
 
 ### Cucumber Integration Tests
 
