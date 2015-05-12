@@ -11,24 +11,6 @@ Some of the advice here is applicable only to Rails 4.0+.
 You can generate a PDF or an HTML copy of this guide using
 [Transmuter](https://github.com/TechnoGate/transmuter).
 
-# The Rails Style Guide
-
-This Rails style guide recommends best practices so that real-world Rails
-programmers can write code that can be maintained by other real-world Rails
-programmers. A style guide that reflects real-world usage gets used, and a
-style guide that holds to an ideal that has been rejected by the people it
-is supposed to help risks not getting used at all &ndash; no matter how good
-it is.
-
-The guide is separated into several sections of related rules. I've tried to add
-the rationale behind the rules (if it's omitted I've assumed it's pretty
-obvious).
-
-I didn't come up with all the rules out of nowhere - they are mostly based on my
-extensive career as a professional software engineer, feedback and suggestions
-from members of the Rails community and various highly regarded Rails
-programming resources.
-
 ## Table of Contents
 
 * [Testing](#testing)
