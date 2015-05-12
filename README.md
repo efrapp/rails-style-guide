@@ -81,6 +81,10 @@ You can generate a PDF or an HTML copy of this guide using
   `before do` is the same as `before(:each) do`.  Use the former for compactness.
 <sup>[[link](#don't-use-before-each)]</sup>
 
+* <a name="don't-use-factory-create"></a>
+  `Factory(:your_factory)` is the same as `Factory.create(:your_factory)`.  Use the former for compactness.
+<sup>[[link](#don't-use-factory-create)]</sup>
+
 * <a name="exercise-conditionals"></a>
   When testing a method with a conditional, the test should exercise the conditional.
 <sup>[[link](#exercise-conditionals)]</sup>
