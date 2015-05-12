@@ -58,9 +58,9 @@ You can generate a PDF or an HTML copy of this guide using
 <sup>[[link](#context-when-with-given)]</sup>
 
   ````
-  context "when the user is not logged in"
-  context "with an assignment record that is overdue"
-  context "given an overdue assignment"
+  context 'when the user is not logged in'
+  context 'with an assignment record that is overdue'
+  context 'given an overdue assignment'
   ````
 
 * <a name="don't-test-code"></a>
@@ -68,15 +68,14 @@ You can generate a PDF or an HTML copy of this guide using
   spec, and that it describes the behavior desired, and not simply the code being tested.
 <sup>[[link](#don't-test-code)]</sup>
 
-  Instead of:
-  ````
-  context "when param next_transfer_date is >= Date.today"
-    it "returns current_section_attempts + old_section.attempts"
-  ````
-  Do something like:
-  ````
-  context "when the user will be transfered today or later"
-    it "returns the combined attempts from their current section and their old section"
+  ````ruby
+  # bad, depends on internal implementation
+  context 'when param next_transfer_date is >= Date.today'
+    it 'returns current_section_attempts + old_section.attempts'
+
+  # good, describes the intended behaviour
+  context 'when the user will be transfered today or later'
+    it 'returns the combined attempts from their current section and their old section'
   ````
 * <a name="don't-use-before-each"></a>
   `before do` is the same as `before(:each) do`.  Use the former for compactness.
