@@ -78,6 +78,9 @@ You can generate a PDF or an HTML copy of this guide using
   context "when the user will be transfered today or later"
     it "returns the combined attempts from their current section and their old section"
   ````
+* <a name="don't-use-before-each"></a>
+  `before do` is the same as `before(:each) do`.  Use the former for compactness.
+<sup>[[link](#don't-use-before-each)]</sup>
 
 * <a name="exercise-conditionals"></a>
   When testing a method with a conditional, the test should exercise the conditional.
