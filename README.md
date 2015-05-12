@@ -280,7 +280,30 @@ You can generate a PDF or an HTML copy of this guide using
 <sup>[[link](#skinny-controllers)]</sup>
 
 * <a name="controller-LOC"></a>
-  Each controller action should (ideally) be under 6 lines of code.
+  The ideal controller action is one or two lines long. e.g.
+  ````ruby
+  def show
+    @record = Record.find(params[:id])
+  end
+  ````
+
+  A create or update action with error handling may legitimately get up to 6 or 7 lines of code. e.g.
+  ````ruby
+  def update
+    @record = @record = Record.find(params[:id])
+    if @record.update_attributes(params[:record])
+      flash[:notice] = 'Record was saved successfully.'
+      redirect_to @record
+    else
+      flash.now[:error] = 'Saving failed'
+      render :edit
+    end
+  end
+  ````
+  But that should be the absolute maximum.
+
+  If a controller action that is gathering data for display in a view starts getting long, move the logic to a presenter.
+  If a controller action for storing or processing submitted data starts getting long, move the logic to a dedicated processor class.
 <sup>[[link](#controller-LOC)]</sup>
 
 * <a name="one-method"></a>
