@@ -88,14 +88,9 @@ You can generate a PDF or an HTML copy of this guide using
 * <a name="switch-to-expect"></a>
   Use the new rspec `expect` syntax instead of `.should`. See [the rspec guide to switching over](https://github.com/rspec/rspec-expectations/blob/master/Should.md).
 <sup>[[link](#switch-to-expect)]</sup>
+ * Prefer `allow` to `.stub`.
+ * Prefer `expect` to `.should_receive`.
 
-* <a name="allow-not-stub"></a>
-  Prefer `allow` to `.stub`.
-<sup>[[link](#allow-not-stub)]</sup>
-
-* <a name="expect-not-should-receive"></a>
-  Prefer `expect` to `.should_receive`.
-<sup>[[link](#expect-not-should-receive)]</sup>
 
 ### Cucumber Integration Tests
 
