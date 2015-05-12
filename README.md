@@ -32,6 +32,10 @@ You can generate a PDF or an HTML copy of this guide using
 
 ## Testing
 ### Rspec Unit Tests
+
+* In general, follow the guidelines detailed at 
+[betterspecs.org](http://betterspecs.org/).
+
 * <a name="unit-describe"></a>
   There should be a `describe` block for each method. For class methods, the `describe` statement should 
   be `.method_name`, and for instance methods `#method_name`.
@@ -42,7 +46,7 @@ You can generate a PDF or an HTML copy of this guide using
 <sup>[[link](#describe-valid-scopes)]</sup>
 
 * <a name="don't-test-privates"></a>
-  Don't test private methods.
+  Don't create a describe block for testing private methods. Any logic in private methods should get tested by ensuring the appropriate test cases exist in the describe blocks of any public methods that use the private methods.
 <sup>[[link](#don't-test-privates)]</sup>
 
 * <a name="use-context"></a>
