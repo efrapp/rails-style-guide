@@ -22,6 +22,7 @@ You can generate a PDF or an HTML copy of this guide using
   * [ActiveRecord Queries](#activerecord-queries)
 * [Migrations](#migrations)
 * [Views](#views)
+* [Commit Messages](#commit-messages)
 * [Internationalization](#internationalization)
 * [Assets](#assets)
 * [Mailers](#mailers)
@@ -866,6 +867,45 @@ when you need to retrieve a single record by some attributes.
 * <a name="partials"></a>
   Mitigate code duplication by using partial templates and layouts.
 <sup>[[link](#partials)]</sup>
+
+## Commit Messages
+
+* Subject lines should be a maximum of 72 characters.  If you need to put more information in the commit, add a blank line after the subject line, and add additional information in a new paragraph.
+
+* Subject lines should be sentences, they should begin with a capital letter.
+
+* Subject lines should begin with a verb, in the imperative, not in the past tense.
+  ````
+  # bad
+  Added some_class#some_method.
+ 
+  # good
+  Add some_class#some_method.
+ ````
+
+* If the first word of the subject line is "Change" or "Alter" or something similar, you can probably eliminate it, and some other words too.
+  ```` 
+  # bad
+  Change some_class#some_method so it takes into account overdue orders.
+
+  # good
+  Make some_class#some_method account for overdue orders.
+  ````
+ 
+* If the subject line of a commit message contains the word *and* or in other way lists more than one item, the commit is probably too large. Split it.
+ 
+* Commits should state what was changed, and if there is room, why.
+ 
+* The word "Refactor" is overused in commit messages.  Only use "Refactor" if you're actually doing a green-green refactor, and even then, a more specific description is probably possible.
+  ````
+  # bad
+  Refactor some_class#some_method.
+
+  # good
+  Extract assignments in some_class#some_method to private methods.
+  Extract complex some_class#some_method logic into new_name inner class.
+  Abstract dupe code from some_class#some_method and other_class#method.
+  ```` 
 
 ## Internationalization
 
