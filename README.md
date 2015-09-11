@@ -13,6 +13,7 @@ You can generate a PDF or an HTML copy of this guide using
 
 ## Table of Contents
 
+* [Topics To Add](#topics-to-add)
 * [Testing](#testing)
 * [Configuration](#configuration)
 * [Routing](#routing)
@@ -30,6 +31,13 @@ You can generate a PDF or an HTML copy of this guide using
 * [Bundler](#bundler)
 * [Flawed Gems](#flawed-gems)
 * [Managing processes](#managing-processes)
+
+## Topics To Add
+
+The following items need a writeup:
+
+* Why mutating params is bad, especially when they've been past into things that aren't controllers (e.g. presenters, interactors)
+* Using form_for, and special tricks needed when form object is not assigned as @object
 
 ## Testing
 ### Rspec Unit Tests
