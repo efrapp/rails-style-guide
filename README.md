@@ -5,6 +5,7 @@
 
 See also:
 [VHL Ruby coding style guide](https://github.com/vhl/ruby-style-guide).
+[VHL CSS style guide](https://github.com/vhl/css-style-guide).
 
 Some of the advice here is applicable only to Rails 4.0+.
 
