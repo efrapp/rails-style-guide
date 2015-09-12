@@ -3,7 +3,7 @@
 > Role models are important. <br/>
 > -- Officer Alex J. Murphy / RoboCop
 
-See also:
+See also:  
 [VHL Ruby coding style guide](https://github.com/vhl/ruby-style-guide).  
 [VHL CSS style guide](https://github.com/vhl/css-style-guide).
 
