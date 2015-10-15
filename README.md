@@ -30,7 +30,6 @@ You can generate a PDF or an HTML copy of this guide using
 * [Mailers](#mailers)
 * [Time](#time)
 * [Bundler](#bundler)
-* [Flawed Gems](#flawed-gems)
 * [Managing processes](#managing-processes)
 
 ## Topics To Add
@@ -254,6 +253,17 @@ The following items need a writeup:
     resources :comments
   end
   ```
+  
+* <a name="namespaced-routes"></a>
+  If you need to nest routes more than 1 level deep then use the `shallow: true` option. This will save user from long urls `posts/1/comments/5/versions/7/edit` and you from long url helpers `edit_post_comment_version`.
+  
+  ```Ruby
+  resources :posts, shallow: true do
+    resources :comments do
+      resources :versions
+    end
+  end
+  ```
 
 * <a name="namespaced-routes"></a>
   Use namespaced routes to group related actions.
@@ -411,7 +421,7 @@ The following items need a writeup:
     validates :username, presence: true
     validates :username, uniqueness: { case_sensitive: false }
     validates :username, format: { with: /\A[A-Za-z][A-Za-z0-9._-]{2,19}\z/ }
-    validates :password, format: { with: /\A\S{8,128}\z/, allow_nil: true}
+    validates :password, format: { with: /\A\S{8,128}\z/, allow_nil: true }
 
     # next we have callbacks
     before_save :cook
@@ -561,32 +571,6 @@ The following items need a writeup:
     end
   end
   ```
-
-  Note that this style of scoping cannot be chained in the same way as named scopes. For instance:
-
-  ```Ruby
-  # unchainable
-  class User < ActiveRecord::Base
-    def User.old
-      where('age > ?', 80)
-    end
-
-    def User.heavy
-      where('weight > ?', 200)
-    end
-  end
-  ```
-
-  In this style both `old` and `heavy` work individually, but you cannot call `User.old.heavy`, to chain these scopes use:
-
-  ```Ruby
-  # chainable
-  class User < ActiveRecord::Base
-    scope :old, -> { where('age > 60') }
-    scope :heavy, -> { where('weight > 200') }
-  end
-  ```
-
 
 * <a name="beware-update-attribute"></a>
   Beware of the behavior of the
@@ -973,8 +957,8 @@ when you need to retrieve a single record by some attributes.
 
 * <a name="organize-locale-files"></a>
   Separate the texts used in the views from translations of ActiveRecord
-  attributes. Place the locale files for the models in a folder `models` and the
-  texts used in the views in folder `views`.
+  attributes. Place the locale files for the models in a folder `locales/models` and the
+  texts used in the views in folder `locales/views`.
 <sup>[[link](#organize-locale-files)]</sup>
 
   * When organization of the locale files is done with additional directories,
@@ -1023,7 +1007,7 @@ when you need to retrieve a single record by some attributes.
 
   ```Ruby
   # bad
-  I18n.t :record_invalid, :scope => [:activerecord, :errors, :messages]
+  I18n.t :record_invalid, scope: [:activerecord, :errors, :messages]
 
   # good
   I18n.t 'activerecord.errors.messages.record_invalid'
@@ -1182,7 +1166,7 @@ your application.
 
 * <a name="tz-config"></a>
   Config your timezone accordingly in `application.rb`.
-<sup>[[link](#time-now)]</sup>
+<sup>[[link](#tz-config)]</sup>
 
   ```Ruby
   config.time_zone = 'Eastern European Time'
@@ -1260,31 +1244,6 @@ your application.
   randomly generated file - it makes sure that all of your team members get the
   same gem versions when they do a `bundle install`.
 <sup>[[link](#gemfile-lock)]</sup>
-
-## Flawed Gems
-
-This is a list of gems that are either problematic or superseded by
-other gems. You should avoid using them in your projects.
-
-* [rmagick](http://rmagick.rubyforge.org/) - this gem is notorious for its
-  memory consumption. Use
-  [minimagick](https://github.com/minimagick/minimagick) instead.
-
-* [autotest](http://www.zenspider.com/ZSS/Products/ZenTest/) - old solution for
-  running tests automatically. Far inferior to
-  [guard](https://github.com/guard/guard) and
-  [watchr](https://github.com/mynyml/watchr).
-
-* [rcov](https://github.com/relevance/rcov) - code coverage tool, not compatible
-  with Ruby 1.9. Use [SimpleCov](https://github.com/colszowka/simplecov)
-  instead.
-
-* [therubyracer](https://github.com/cowboyd/therubyracer) - the use of this gem
-  in production is strongly discouraged as it uses a very large amount of
-  memory. I'd suggest using `node.js` instead.
-
-This list is also a work in progress. Please, let me know if you know other
-popular, but flawed gems.
 
 ## Managing processes
 
