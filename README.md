@@ -10,7 +10,7 @@ See also:
 Some of the advice here is applicable only to Rails 4.0+.
 
 You can generate a PDF or an HTML copy of this guide using
-[Transmuter](https://github.com/TechnoGate/transmuter).
+[Pandoc](http://pandoc.org/).
 
 ## Table of Contents
 
@@ -19,6 +19,7 @@ You can generate a PDF or an HTML copy of this guide using
 * [Configuration](#configuration)
 * [Routing](#routing)
 * [Controllers](#controllers)
+  * [Rendering](#rendering)
 * [Models](#models)
   * [ActiveRecord](#activerecord)
   * [ActiveRecord Queries](#activerecord-queries)
@@ -28,6 +29,7 @@ You can generate a PDF or an HTML copy of this guide using
 * [Internationalization](#internationalization)
 * [Assets](#assets)
 * [Mailers](#mailers)
+* [Active Support Core Extensions](#active-support-core-extensions)
 * [Time](#time)
 * [Bundler](#bundler)
 * [Managing processes](#managing-processes)
@@ -253,10 +255,10 @@ The following items need a writeup:
     resources :comments
   end
   ```
-  
+
 * <a name="namespaced-routes"></a>
   If you need to nest routes more than 1 level deep then use the `shallow: true` option. This will save user from long urls `posts/1/comments/5/versions/7/edit` and you from long url helpers `edit_post_comment_version`.
-  
+
   ```Ruby
   resources :posts, shallow: true do
     resources :comments do
@@ -335,6 +337,74 @@ The following items need a writeup:
   Share no more than two instance variables between a controller and a view.
 <sup>[[link](#shared-instance-variables)]</sup>
 
+
+### Rendering
+
+* <a name="inline-rendering"></a>
+  Prefer using a template over inline rendering.
+<sup>[[link](#inline-rendering)]</sup>
+
+```Ruby
+# very bad
+class ProductsController < ApplicationController
+  def index
+    render inline: "<% products.each do |p| %><p><%= p.name %></p><% end %>", type: :erb
+  end
+end
+
+# good
+## app/views/products/index.html.erb
+<%= render partial: 'product', collection: products %>
+
+## app/views/products/_product.html.erb
+<p><%= product.name %></p>
+<p><%= product.price %></p>
+
+## app/controllers/foo_controller.rb
+class ProductsController < ApplicationController
+  def index
+    render :index
+  end
+end
+```
+
+* <a name="plain-text-rendering"></a>
+  Prefer `render plain:` over `render text:`.
+<sup>[[link](#plain-text-rendering)]</sup>
+
+```Ruby
+# bad - sets MIME type to `text/html`
+...
+render text: 'Ruby!'
+...
+
+# bad - requires explicit MIME type declaration
+...
+render text: 'Ruby!', content_type: 'text/plain'
+...
+
+# good - short and precise
+...
+render plain: 'Ruby!'
+...
+```
+
+* <a name="http-status-code-symbols"></a>
+  Prefer [corresponding symbols](https://gist.github.com/mlanett/a31c340b132ddefa9cca) to numeric HTTP status codes. They are meaningful and do not look like "magic" numbers for less known HTTP status codes.
+<sup>[[link](#http-status-code-symbols)]</sup>
+
+```Ruby
+# bad
+...
+render status: 500
+...
+
+# good
+...
+render status: :forbidden
+...
+```
+
 ## Models
 
 * <a name="model-classes"></a>
@@ -375,6 +445,14 @@ The following items need a writeup:
   For a more complete example refer to the
   [RailsCast on the subject](http://railscasts.com/episodes/326-activeattr).
 
+* <a name="model-business-logic"></a>
+  Unless they have some meaning in the business domain, don't put methods in
+  your model that just format your data (like code generating HTML). These
+  methods are most likely going to be called from the view layer only, so their
+  place is in helpers. Keep your models for business logic and data-persistance
+  only.
+<sup>[[link](#model-business-logic)]</sup>
+
 ### ActiveRecord
 
 * <a name="keep-ar-defaults"></a>
@@ -410,7 +488,12 @@ The following items need a writeup:
 
     attr_accessible :login, :first_name, :last_name, :email, :password
 
-    # followed by association macros, in this order
+    # Rails4+ enums after attr macros, prefer the hash syntax
+    enum gender: { female: 0, male: 1 }
+
+    # followed by association macros
+    belongs_to :country
+
     has_many :authentications, dependent: :destroy
     has_one :profile
     # has_and_belongs_to_many would go here if you have one
@@ -448,7 +531,7 @@ The following items need a writeup:
     has_and_belongs_to_many :users
   end
 
-  # prefered way - using has_many :through
+  # preferred way - using has_many :through
   class User < ActiveRecord::Base
     has_many :memberships
     has_many :groups, through: :memberships
@@ -561,7 +644,6 @@ The following items need a writeup:
   complicated, it is preferable to make a class method instead which serves the
   same purpose of the named scope and returns an `ActiveRecord::Relation`
   object. Arguably you can define even simpler scopes like this.
-
 <sup>[[link](#named-scope-class)]</sup>
 
   ```Ruby
@@ -669,6 +751,22 @@ The following items need a writeup:
   end
   ```
 
+* <a name="has_many-has_one-dependent-option"></a>
+  Define the `dependent` option to the `has_many` and `has_one` associations.
+<sup>[[link](#has_many-has_one-dependent-option)]</sup>
+
+  ```Ruby
+  # bad
+  class Post < ActiveRecord::Base
+    has_many :comments
+  end
+
+  # good
+  class Post < ActiveRecord::Base
+    has_many :comments, dependent: :destroy
+  end
+  ```
+
 ### ActiveRecord Queries
 
 * <a name="avoid-interpolation"></a>
@@ -718,7 +816,7 @@ when you need to retrieve a single record by id.
   ```
 
 * <a name="find_by"></a>
-  Favor the use of `find_by` over `where`
+  Favor the use of `find_by` over `where` and `find_by_attribute`
 when you need to retrieve a single record by some attributes.
 <sup>[[link](#find_by)]</sup>
 
@@ -726,25 +824,11 @@ when you need to retrieve a single record by some attributes.
   # bad
   User.where(first_name: 'Bruce', last_name: 'Wayne').first
 
+  # bad
+  User.find_by_first_name_and_last_name('Bruce', 'Wayne')
+
   # good
   User.find_by(first_name: 'Bruce', last_name: 'Wayne')
-  ```
-
-* <a name="find_each"></a>
-  Use `find_each` when you need to process a lot of records.
-<sup>[[link](#find_each)]</sup>
-
-  ```Ruby
-  # bad - loads all the records at once
-  # This is very inefficient when the users table has thousands of rows.
-  User.all.each do |user|
-    NewsMailer.weekly(user).deliver_now
-  end
-
-  # good - records are retrieved in batches
-  User.find_each do |user|
-    NewsMailer.weekly(user).deliver_now
-  end
   ```
 
 * <a name="where-not"></a>
@@ -838,7 +922,7 @@ when you need to retrieve a single record by some attributes.
     end
   end
 
-  # the new prefered way
+  # the new preferred way
   class AddNameToPeople < ActiveRecord::Migration
     def change
       add_column :people, :name, :string
@@ -1161,6 +1245,81 @@ your application.
   sent. To overcome this emails can be sent in background process with the help
   of [sidekiq](https://github.com/mperham/sidekiq) gem.
 <sup>[[link](#background-email)]</sup>
+
+
+## Active Support Core Extensions
+
+* <a name="try-bang"></a>
+  Prefer Ruby 2.3's safe navigation operator `&.` over `ActiveSupport#try!`.
+<sup>[[link](#try-bang)]</sup>
+
+```ruby
+# bad
+obj.try! :fly
+
+# good
+obj&.fly
+```
+
+* <a name="active_support_aliases"></a>
+  Prefer Ruby's Standard Library methods over `ActiveSupport` aliases.
+<sup>[[link](#active_support_aliases)]</sup>
+
+```ruby
+# bad
+'the day'.starts_with? 'th'
+'the day'.ends_with? 'ay'
+
+# good
+'the day'.start_with? 'th'
+'the day'.end_with? 'ay'
+```
+
+* <a name="active_support_extensions"></a>
+  Prefer Ruby's Standard Library over uncommon ActiveSupport extensions.
+<sup>[[link](#active_support_extensions)]</sup>
+
+```ruby
+# bad
+(1..50).to_a.forty_two
+1.in? [1, 2]
+'day'.in? 'the day'
+
+# good
+(1..50).to_a[41]
+[1, 2].include? 1
+'the day'.include? 'day'
+```
+
+* <a name="inquiry"></a>
+  Prefer Ruby's comparison operators over ActiveSupport's `Array#inquiry`, `Numeric#inquiry` and `String#inquiry`.
+<sup>[[link](#inquiry)]</sup>
+
+```ruby
+# bad - String#inquiry
+ruby = 'two'.inquiry
+ruby.two?
+
+# good
+ruby = 'two'
+ruby == 'two'
+
+# bad - Array#inquiry
+pets = %w(cat dog).inquiry
+pets.gopher?
+
+# good
+pets = %w(cat dog)
+pets.include? 'cat'
+
+# bad - Numeric#inquiry
+0.positive?
+0.negative?
+
+# good
+0 > 0
+0 < 0
+```
 
 ## Time
 
