@@ -3,46 +3,19 @@
 > Role models are important. <br/>
 > -- Officer Alex J. Murphy / RoboCop
 
-The goal of this guide is to present a set of best practices and style
-prescriptions for Ruby on Rails 4 development. It's a
-complementary guide to the already existing community-driven
-[Ruby coding style guide](https://github.com/bbatsov/ruby-style-guide).
+See also:  
+[VHL Ruby coding style guide](https://github.com/vhl/ruby-style-guide).  
+[VHL CSS style guide](https://github.com/vhl/css-style-guide).
 
 Some of the advice here is applicable only to Rails 4.0+.
 
 You can generate a PDF or an HTML copy of this guide using
 [Pandoc](http://pandoc.org/).
 
-Translations of the guide are available in the following languages:
-
-* [Chinese Simplified](https://github.com/JuanitoFatas/rails-style-guide/blob/master/README-zhCN.md)
-* [Chinese Traditional](https://github.com/JuanitoFatas/rails-style-guide/blob/master/README-zhTW.md)
-* [German](https://github.com/arbox/de-rails-style-guide/blob/master/README-deDE.md)
-* [Japanese](https://github.com/satour/rails-style-guide/blob/master/README-jaJA.md)
-* [Russian](https://github.com/arbox/rails-style-guide/blob/master/README-ruRU.md)
-* [Turkish](https://github.com/tolgaavci/rails-style-guide/blob/master/README-trTR.md)
-* [Korean](https://github.com/pureugong/rails-style-guide/blob/master/README-koKR.md)
-
-# The Rails Style Guide
-
-This Rails style guide recommends best practices so that real-world Rails
-programmers can write code that can be maintained by other real-world Rails
-programmers. A style guide that reflects real-world usage gets used, and a
-style guide that holds to an ideal that has been rejected by the people it
-is supposed to help risks not getting used at all &ndash; no matter how good
-it is.
-
-The guide is separated into several sections of related rules. I've tried to add
-the rationale behind the rules (if it's omitted I've assumed it's pretty
-obvious).
-
-I didn't come up with all the rules out of nowhere - they are mostly based on my
-extensive career as a professional software engineer, feedback and suggestions
-from members of the Rails community and various highly regarded Rails
-programming resources.
-
 ## Table of Contents
 
+* [Topics To Add](#topics-to-add)
+* [Testing](#testing)
 * [Configuration](#configuration)
 * [Routing](#routing)
 * [Controllers](#controllers)
@@ -52,6 +25,7 @@ programming resources.
   * [ActiveRecord Queries](#activerecord-queries)
 * [Migrations](#migrations)
 * [Views](#views)
+* [Commit Messages](#commit-messages)
 * [Internationalization](#internationalization)
 * [Assets](#assets)
 * [Mailers](#mailers)
@@ -59,6 +33,114 @@ programming resources.
 * [Time](#time)
 * [Bundler](#bundler)
 * [Managing processes](#managing-processes)
+
+## Topics To Add
+
+The following items need a writeup:
+
+* Why mutating params is bad, especially when they've been past into things that aren't controllers (e.g. presenters, interactors)
+* Using form_for, and special tricks needed when form object is not assigned as @object
+
+## Testing
+### Rspec Unit Tests
+
+* In general, follow the guidelines detailed at 
+[betterspecs.org](http://betterspecs.org/).
+
+* <a name="unit-describe"></a>
+  There should be a `describe` block for each method. For class methods, the `describe` statement should 
+  be `.method_name`, and for instance methods `#method_name`.
+<sup>[[link](#unit-describe)]</sup>
+
+* <a name="describe-valid-scopes"></a>
+  Use a new `describe` block for any validations or scopes that are tested.
+<sup>[[link](#describe-valid-scopes)]</sup>
+
+* <a name="don't-test-privates"></a>
+  Don't create a describe block for testing private methods. Any logic in private methods should get tested by ensuring the appropriate test cases exist in the describe blocks of any public methods that use the private methods.
+<sup>[[link](#don't-test-privates)]</sup>
+
+* <a name="use-context"></a>
+  Complex or multiple `it` statements should go in a `context` block (a single, short `it` can stand alone).
+<sup>[[link](#use-context)]</sup>
+
+* <a name="context-when-with-given"></a>
+  Context blocks should almost always begin with one of three words "when", "with" or "given".
+<sup>[[link](#context-when-with-given)]</sup>
+
+  ````
+  context 'when the user is not logged in'
+  context 'with an assignment record that is overdue'
+  context 'given an overdue assignment'
+  ````
+
+* <a name="don't-test-code"></a>
+  For both `context` statements and `it` statements, make sure you can easily identify the purpose of the 
+  spec, and that it describes the behavior desired, and not simply the code being tested.
+<sup>[[link](#don't-test-code)]</sup>
+
+  ````ruby
+  # bad, depends on internal implementation
+  context 'when param next_transfer_date is >= Date.today'
+    it 'returns current_section_attempts + old_section.attempts'
+
+  # good, describes the intended behaviour
+  context 'when the user will be transfered today or later'
+    it 'returns the combined attempts from their current section and their old section'
+  ````
+* <a name="don't-use-before-each"></a>
+  `before do` is the same as `before(:each) do`.  Use the former for compactness.
+<sup>[[link](#don't-use-before-each)]</sup>
+
+* <a name="don't-use-factory-create"></a>
+  `Factory(:your_factory)` is the same as `Factory.create(:your_factory)`.  Use the former for compactness.
+<sup>[[link](#don't-use-factory-create)]</sup>
+
+* <a name="exercise-conditionals"></a>
+  When testing a method with a conditional, the test should exercise the conditional.
+<sup>[[link](#exercise-conditionals)]</sup>
+
+* <a name="switch-to-expect"></a>
+  Use the new rspec `expect` syntax instead of `.should`. See [the rspec guide to switching over](https://github.com/rspec/rspec-expectations/blob/master/Should.md).
+<sup>[[link](#switch-to-expect)]</sup>
+ * Prefer `allow` to `.stub`.
+ * Prefer `expect` to `.should_receive`.
+
+
+### Cucumber Integration Tests
+
+* <a name="reuse-scenario"></a>
+  Each `Scenario` has its own setup and teardown, so it's acceptable to test multiple user actions 
+  that follow one another within a scenario.
+<sup>[[link](#reuse-scenario)]</sup>
+
+* <a name="long-scenarios"></a>
+  If a `Scenario` is too long or complicated, then break it up
+<sup>[[link](#long-scenarios)]</sup>
+
+* <a name="cuke-given-when-then"></a>
+  Use `Given`, `When`, and `Then` meaningfully and consistently.
+<sup>[[link](#cuke-given-when-then)]</sup>
+
+  `Given` steps are for data setup and setting up the state of the system before the simulated user 
+  starts interacting with it. Once the user has started interacting with the environment, use `When` 
+  instead. For instance, `Given I am on my Dashboard` should be `When I go to my Dashboard` instead.
+
+  `When` steps are for actions taken by the simulated user or, in some cases, an external agent that 
+  changes the state of the system in the middle of the user's interaction, e.g. `When the gradebook 
+  updater makes my gradebook current`.
+
+  `Then` steps are always expectations.  They should almost always have the word "should" in them. 
+  
+  `Then I should see a grade of 55.5% for activity "Bad Acting"`  
+
+* <a name="test-no-instance-vars"></a>
+  Do not use any instance variables except `@user` (for the current logged in user).
+<sup>[[link](#test-no-instance-vars)]</sup>
+
+* <a name="cukes-use-regex"></a>
+  Use `"([^"]*)"` in the body to allow specifying things like Program titles, Course names, etc.
+<sup>[[link](#cukes-use-regex)]</sup>
 
 ## Configuration
 
@@ -219,6 +301,33 @@ programming resources.
   should naturally reside in the model).
 <sup>[[link](#skinny-controllers)]</sup>
 
+* <a name="controller-LOC"></a>
+  The ideal controller action is one or two lines long. e.g.
+  ````ruby
+  def show
+    @record = Record.find(params[:id])
+  end
+  ````
+
+  A create or update action with error handling may legitimately get up to 6 or 7 lines of code. e.g.
+  ````ruby
+  def update
+    @record = @record = Record.find(params[:id])
+    if @record.update_attributes(params[:record])
+      flash[:notice] = 'Record was saved successfully.'
+      redirect_to @record
+    else
+      flash.now[:error] = 'Saving failed'
+      render :edit
+    end
+  end
+  ````
+  But that should be the absolute maximum.
+
+  If a controller action that is gathering data for display in a view starts getting long, move the logic to a presenter.
+  If a controller action for storing or processing submitted data starts getting long, move the logic to a dedicated processor class.
+<sup>[[link](#controller-LOC)]</sup>
+
 * <a name="one-method"></a>
   Each controller action should (ideally) invoke only one method other than an
   initial find or new.
@@ -302,6 +411,10 @@ render status: :forbidden
   Introduce non-ActiveRecord model classes freely.
 <sup>[[link](#model-classes)]</sup>
 
+* <a name="model-LOC"></a>
+  Each model method should (ideally) be under 6 lines of code.
+<sup>[[link](#model-LOC)]</sup>
+
 * <a name="meaningful-model-names"></a>
   Name the models with meaningful (but short) names without abbreviations.
 <sup>[[link](#meaningful-model-names)]</sup>
@@ -355,14 +468,16 @@ render status: :forbidden
   end
   ```
 
-* <a name="macro-style-methods"></a>
-  Group macro-style methods (`has_many`, `validates`, etc) in the beginning of
-  the class definition.
-<sup>[[link](#macro-style-methods)]</sup>
+* <a name="model-inclusion-order"></a>
+  Inclusion order in the class definition:
+<sup>[[link](#model-inclusion-order)]</sup>
 
   ```Ruby
   class User < ActiveRecord::Base
-    # keep the default scope first (if any)
+    # modules should be included first, so we know what behavior we are adding to the class
+    include MySpecialModule
+
+    # then the default scope (if any)
     default_scope { where(active: true) }
 
     # constants come up next
@@ -380,6 +495,9 @@ render status: :forbidden
     belongs_to :country
 
     has_many :authentications, dependent: :destroy
+    has_one :profile
+    # has_and_belongs_to_many would go here if you have one
+    belongs_to :country
 
     # and validation macros
     validates :email, presence: true
@@ -829,9 +947,69 @@ when you need to retrieve a single record by some attributes.
   in the view helper or the model.
 <sup>[[link](#no-complex-view-formatting)]</sup>
 
+* <a name="view-helper-no-logic"></a>
+  View helpers should only be used for presentation (not logic).
+<sup>[[link](#view-helper-no-logic)]</sup>
+
+* <a name="view-use-presenter"></a>
+  Views should never contain complex logic. If it's not handled by the model, 
+  it should be handled by a presenter.
+<sup>[[link](#view-use-presenter)]</sup>
+
+* <a name="view-no-variables"></a>
+  There should be no variables assigned in a view.
+<sup>[[link](#view-no-variables)]</sup>
+
+* <a name="view-no-data-structure-manipulation"></a>
+  Don't manipulate data structures in a view (looping is ok).
+<sup>[[link](#view-no-data-structure-manipulation)]</sup>
+
+* <a name="separate-present-data"></a>
+  Keep presentation separate from data.
+<sup>[[link](#separate-present-data)]</sup>
+
 * <a name="partials"></a>
   Mitigate code duplication by using partial templates and layouts.
 <sup>[[link](#partials)]</sup>
+
+## Commit Messages
+
+* Subject lines should be a maximum of 72 characters.  If you need to put more information in the commit, add a blank line after the subject line, and add additional information in a new paragraph.
+
+* Subject lines should be sentences, they should begin with a capital letter.
+
+* Subject lines should begin with a verb, in the imperative, not in the past tense.
+  ````
+  # bad
+  Added some_class#some_method.
+ 
+  # good
+  Add some_class#some_method.
+ ````
+
+* If the first word of the subject line is "Change" or "Alter" or something similar, you can probably eliminate it, and some other words too.
+  ```` 
+  # bad
+  Change some_class#some_method so it takes into account overdue orders.
+
+  # good
+  Make some_class#some_method account for overdue orders.
+  ````
+ 
+* If the subject line of a commit message contains the word *and* or in other way lists more than one item, the commit is probably too large. Split it.
+ 
+* Commits should state what was changed, and if there is room, why.
+ 
+* The word "Refactor" is overused in commit messages.  Only use "Refactor" if you're actually doing a green-green refactor, and even then, a more specific description is probably possible.
+  ````
+  # bad
+  Refactor some_class#some_method.
+
+  # good
+  Extract assignments in some_class#some_method to private methods.
+  Extract complex some_class#some_method logic into new_name inner class.
+  Abstract dupe code from some_class#some_method and other_class#method.
+  ```` 
 
 ## Internationalization
 
