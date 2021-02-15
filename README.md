@@ -1001,6 +1001,7 @@ when you need to retrieve a single record by some attributes.
 * Commits should state what was changed, and if there is room, why.
  
 * The word "Refactor" is overused in commit messages.  Only use "Refactor" if you're actually doing a green-green refactor, and even then, a more specific description is probably possible.
+
   ````
   # bad
   Refactor some_class#some_method.
@@ -1009,10 +1010,9 @@ when you need to retrieve a single record by some attributes.
   Extract assignments in some_class#some_method to private methods.
   Extract complex some_class#some_method logic into new_name inner class.
   Abstract dupe code from some_class#some_method and other_class#method.
-  ```` 
-
+  
 ## Internationalization
-
+   
 * <a name="locale-texts"></a>
   No strings or other locale specific settings should be used in the views,
   models and controllers. These texts should be moved to the locale files in the
